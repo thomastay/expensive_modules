@@ -1,0 +1,6 @@
+C++ took ~12s on test_big_sparse.in
+F# took ~58s on test_big_sparse.in
+
+Update: with basically a total rewrite to imperative style, F# got down to 6.6s on test_big_sparse.in. C++ now takes ~8s (this is on Windows).
+Bear in mind the C++ is not as optimized.
+As I expected, the thing that takes the most time is merging the sorted lists. Optimizing this will make the code much faster.
