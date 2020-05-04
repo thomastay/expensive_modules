@@ -1,19 +1,18 @@
 ﻿open ExpensiveModules
 open System
 
-let printDigraph (g: Digraph): unit = 
+let printDigraph (g: Digraph): unit =
     for KeyValue(label, node) in g.labels do
         let beneath = (g.costMap.Item node)
-        printfn "%s: %A" label (beneath.Count)
-        
-let runOnInput() = 
+        printfn "%s: %A" label (beneath.Length)
+
+let runOnInput() =
     let numLines = Console.ReadLine() |> int
     [|1..numLines|]
     |> Array.map (fun _ -> Console.ReadLine().Split(' '))
     |> createTransposeGraph numLines
     |> costOfModules
     |> printDigraph
-
 
 [<EntryPoint>]
 let main argv =

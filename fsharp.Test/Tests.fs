@@ -32,9 +32,9 @@ type TestClass () =
         let aSize = 1
         let bSize = 2
         let cSize = 3
-        Assert.IsTrue(graph.costMap.[0].Count = aSize)
-        Assert.IsTrue(graph.costMap.[1].Count = bSize)
-        Assert.IsTrue(graph.costMap.[2].Count = cSize)
+        Assert.IsTrue(graph.costMap.[0].Length = aSize)
+        Assert.IsTrue(graph.costMap.[1].Length = bSize)
+        Assert.IsTrue(graph.costMap.[2].Length = cSize)
 
     [<TestMethod>]
     member this.TestSimple2 () =
@@ -53,8 +53,8 @@ type TestClass () =
         let cSize = 3
         let dSize = 2
         let eSize = 4
-        Assert.IsTrue(graph.costMap.[0].Count = aSize)
-        Assert.IsTrue(graph.costMap.[1].Count = bSize)
-        Assert.IsTrue(graph.costMap.[2].Count = cSize)
-        Assert.IsTrue(graph.costMap.[3].Count = dSize)
-        Assert.IsTrue(graph.costMap.[4].Count = eSize)
+        Assert.IsTrue(graph.costMap.[0].Length = aSize)
+        Assert.IsTrue(graph.costMap.[1].Length = bSize)
+        Assert.IsTrue(graph.costMap.[2].Length = cSize)
+        Assert.IsTrue(graph.costMap.[3].Length = dSize)
+        Assert.IsTrue(graph.costMap.[4].Length = eSize)

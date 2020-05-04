@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "fsharp.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "< C:\\Users\\z124t\\source\\repos\\expensive_modules\\test_sparse_big.in"
+    }
+  }
+}
