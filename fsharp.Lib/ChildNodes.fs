@@ -1,12 +1,12 @@
 ﻿namespace UtilityCollections
 
 open System.Collections.Generic
-// This lets us change the underlying type without changing the 
+// This lets us change the underlying type without changing the
 // implementation
 type ChildNodes = HashSet<int>
 
 module ChildNodes =
-    let init (node: int): ChildNodes = 
+    let init (node: int): ChildNodes =
         let d = HashSet()
         d.Add node |> ignore
         d

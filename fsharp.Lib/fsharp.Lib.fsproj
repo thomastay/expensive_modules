@@ -4,9 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Content Include="fsharplint.json" />
     <Compile Include="ChildNodes.fs" />
     <Compile Include="fsExpensiveModules.fs" />
   </ItemGroup>
+
+  <ItemGroup />
+  <Target Name="FSharpLint" AfterTargets="AfterBuild">
+    <Exec Command="dotnet fsharplint -f msbuild lint --lint-config $(MSBuildThisFileDirectory)/fsharplint.json $(MSBuildProjectFullPath)" ConsoleToMsBuild="true" IgnoreExitCode="true" />
+  </Target>
 
 </Project>

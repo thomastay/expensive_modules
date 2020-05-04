@@ -1,10 +1,9 @@
 namespace fsharp.Test
 
-open System.Collections
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open ExpensiveModules
 (*
-type Digraph = 
+type Digraph =
     {size: int;
     labels: Map<string, int>;
     adjacency: int array array; //adjacency[i] is the neighbors of the ith node
@@ -15,7 +14,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestCreateGraph () =
-        let graph = 
+        let graph =
             [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
             |> createTransposeGraph 3
         let m = [("a", 0); ("b", 1); ("c", 2)] |> Map.ofList
@@ -26,7 +25,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestSimple1 () =
-        let graph = 
+        let graph =
             [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
             |> createTransposeGraph 3
             |> costOfModules
@@ -39,7 +38,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.TestSimple2 () =
-        let graph = 
+        let graph =
             [|
                 [|"a"; "b"; "c"; "d"; "e"|];
                 [|"b"; "c"; "e"|];
