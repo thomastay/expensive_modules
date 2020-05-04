@@ -1,18 +1,11 @@
-﻿module fsExpensiveModules
+﻿module ExpensiveModules
 
 open System
 open System.Collections.Generic
 
-// This lets us change the underlying type without changing the 
-// implementation
-type ChildNodes = HashSet<Int16>
-
-// Builds a childNode set from a list of child nodes
-let buildChildNodes (lst: ChildNodes[]): ChildNodes =
-    let d = Array.head lst
-    for i in 1..(Array.length lst - 1) do
-        d.UnionWith lst.[i]
-    d
+open UtilityCollections
+            
+        
 
 type Digraph = 
     {size: int;
@@ -68,8 +61,7 @@ let costOfModules (graph: Digraph) =
         let found, value = graph.costMap.TryGetValue node
         if found then value else
             let adj = graph.adjacency.[node]
-            let (s: ChildNodes) = HashSet()
-            s.Add (int16 node) |> ignore
+            let s = ChildNodes.init node
             match adj.Length with
             | 0 -> 
                 // Node is a leaf, so add itself to costMap
@@ -80,7 +72,7 @@ let costOfModules (graph: Digraph) =
                     adj
                     |> Array.map dfs
                     |> Array.append [|s|]
-                    |> buildChildNodes
+                    |> ChildNodes.build
                 graph.costMap.Add(node, s)
                 s
     for i in 0..graph.size-1 do

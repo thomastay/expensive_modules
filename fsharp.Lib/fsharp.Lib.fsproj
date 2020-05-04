@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ChildNodes.fs" />
     <Compile Include="fsExpensiveModules.fs" />
   </ItemGroup>
 

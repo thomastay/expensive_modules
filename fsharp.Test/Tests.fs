@@ -2,7 +2,7 @@ namespace fsharp.Test
 
 open System.Collections
 open Microsoft.VisualStudio.TestTools.UnitTesting
-open fsExpensiveModules
+open ExpensiveModules
 (*
 type Digraph = 
     {size: int;

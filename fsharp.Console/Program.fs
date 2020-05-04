@@ -1,4 +1,4 @@
-﻿open fsExpensiveModules
+﻿open ExpensiveModules
 open System
 
 let printDigraph (g: Digraph): unit = 
