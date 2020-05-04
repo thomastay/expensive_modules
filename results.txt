@@ -4,3 +4,7 @@ F# took ~58s on test_big_sparse.in
 Update: with basically a total rewrite to imperative style, F# got down to 6.6s on test_big_sparse.in. C++ now takes ~8s (this is on Windows).
 Bear in mind the C++ is not as optimized.
 As I expected, the thing that takes the most time is merging the sorted lists. Optimizing this will make the code much faster.
+
+Update: 5/5/2020
+It now gets down to 5.5 seconds on Windows. I modified the code slightly, to have separation of concerns, and hash differently, but the reality is that nothing much has changed.
+I also realized that the high memory usage has nothing to do with the graph traversal code, but rather comes from the graph creation code, which uses up to 65MB of space. Regular code only uses about 10MB max. The GC does collect some of the graph creation code memory, but not always, and idk if this slows down the program by making the GC have to do more work? Need to think and profile.

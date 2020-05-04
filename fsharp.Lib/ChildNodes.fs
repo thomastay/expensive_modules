@@ -10,6 +10,7 @@ module ChildNodes =
 
     // Builds a childNode set from a list of child nodes
     let build (lst: ChildNodes[]): ChildNodes =
-        let megaArray = Array.concat lst
-        let d = HashSet megaArray
+        let d = HashSet()
+        for s in lst do
+            d.UnionWith s
         d |> Seq.toArray
