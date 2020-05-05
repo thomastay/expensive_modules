@@ -1,6 +1,6 @@
 ﻿module GraphCreation
-open UtilityCollections
 open System.Collections.Generic
+open UtilityCollections
 
 type Digraph =
     {size: int;

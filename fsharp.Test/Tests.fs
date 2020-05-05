@@ -1,6 +1,7 @@
 namespace fsharp.Test
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open GraphCreation
 open ExpensiveModules
 (*
 type Digraph =
@@ -10,7 +11,7 @@ type Digraph =
     costMap: Dictionary<int, ChildNodes>}
 *)
 [<TestClass>]
-type TestClass () =
+type TestGraphCreation () =
 
     [<TestMethod>]
     member this.TestCreateGraph () =
@@ -23,6 +24,8 @@ type TestClass () =
         Assert.AreEqual(graph.labels, m)
         Assert.IsTrue((graph.adjacency = adj))
 
+[<TestClass>]
+type TestExpensiveModules() =
     [<TestMethod>]
     member this.TestSimple1 () =
         let graph =

@@ -10,8 +10,8 @@
 
     <ItemGroup>
         <Content Include="fsharplint.json" />
-        <Compile Include="GraphCreation.fs" />
         <Compile Include="ChildNodes.fs" />
+        <Compile Include="GraphCreation.fs" />
         <Compile Include="TransitiveReduction.fs" />
         <Compile Include="ExpensiveModules.fs" />
     </ItemGroup>
