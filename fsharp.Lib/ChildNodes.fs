@@ -9,7 +9,7 @@ module ChildNodes =
     let init (node: int): ChildNodes = [|node|]
 
     // Builds a childNode set from a list of child nodes
-    let build (lst: ChildNodes list): ChildNodes =
+    let build (lst: ChildNodes[]): ChildNodes =
         let d = HashSet()
         for s in lst do
             d.UnionWith s

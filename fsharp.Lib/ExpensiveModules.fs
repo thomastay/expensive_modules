@@ -14,6 +14,7 @@ let genAdj arr row =
         then helper (col + 1) (col::lst)
         else helper (col + 1) lst
     helper 0 []
+    |> Array.ofList
 
 let costOfModules (graph: Digraph) =
     let rec dfs (node: int) =
@@ -27,11 +28,10 @@ let costOfModules (graph: Digraph) =
                 graph.costMap.Add(node, s)
                 s
             | _ ->
-                let cons x y = x :: y
                 let s =
                     adj
-                    |> List.map dfs
-                    |> cons s
+                    |> Array.map dfs
+                    |> Array.append [|s|]
                     |> ChildNodes.build
                 graph.costMap.Add(node, s)
                 s
