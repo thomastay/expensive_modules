@@ -1,4 +1,5 @@
 ﻿open GraphCreation
+open TransitiveReduction
 open ExpensiveModules
 open System
 
@@ -12,6 +13,7 @@ let runOnInput() =
     [|1..numLines|]
     |> Array.map (fun _ -> Console.ReadLine().Split(' '))
     |> createTransposeGraph
+    |> TransitiveReduction.reduce
     |> costOfModules
     |> printDigraph
 

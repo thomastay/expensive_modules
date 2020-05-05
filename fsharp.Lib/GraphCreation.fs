@@ -29,12 +29,10 @@ let createTransposeGraph (sll: string[][]) =
     let labels = createLabels nodes
     let adj = Array2D.zeroCreate size size
     // for each source, sink, update the adjacency matrix
-    // XXX: Consider whether or not we want reflexive relations
     for i in 0..size-1 do
         let sources, sink = createTransposeEdges labels sll.[i]
         for source in sources do
             adj.[source, sink] <- true
-        adj.[sink, sink] <- true // XXX: Should we keep this?
     {size=size; labels = labels; adjacency = adj;
     costMap = new Dictionary<int, ChildNodes>();}
 
