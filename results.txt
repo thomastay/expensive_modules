@@ -8,3 +8,11 @@ As I expected, the thing that takes the most time is merging the sorted lists. O
 Update: 5/5/2020
 It now gets down to 5.5 seconds on Windows. I modified the code slightly, to have separation of concerns, and hash differently, but the reality is that nothing much has changed.
 I also realized that the high memory usage has nothing to do with the graph traversal code, but rather comes from the graph creation code, which uses up to 65MB of space. Regular code only uses about 10MB max. The GC does collect some of the graph creation code memory, but not always, and idk if this slows down the program by making the GC have to do more work? Need to think and profile.
+
+
+Update: 6/5/2020
+Transitive reduction IS indeed working as expected:
+Removes: 20373562 edges
+However, it runs too slowly! Takes nearly 16s extra to execute the transitive reduction algorithm. 
+It does make the costOfModules algorithm EXTREMELY fast, though, taking <1s to run.
+So implementing cost reduction is worthwhile, but we will probably have to do it with adjacency lists...
