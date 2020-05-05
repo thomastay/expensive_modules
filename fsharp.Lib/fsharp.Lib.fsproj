@@ -10,11 +10,11 @@
 
     <ItemGroup>
         <Content Include="fsharplint.json" />
+        <Compile Include="GraphCreation.fs" />
         <Compile Include="ChildNodes.fs" />
+        <Compile Include="TransitiveReduction.fs" />
         <Compile Include="ExpensiveModules.fs" />
     </ItemGroup>
-
-    <ItemGroup />
     <Target Name="FSharpLint" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
         <Exec Command="dotnet fsharplint -f msbuild lint --lint-config $(MSBuildThisFileDirectory)/fsharplint.json $(MSBuildProjectFullPath)" ConsoleToMsBuild="true" IgnoreExitCode="true" />
     </Target>
