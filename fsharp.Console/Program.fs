@@ -1,4 +1,5 @@
-﻿open ExpensiveModules
+﻿open GraphCreation
+open ExpensiveModules
 open System
 
 let printDigraph (g: Digraph): unit =
@@ -10,7 +11,7 @@ let runOnInput() =
     let numLines = Console.ReadLine() |> int
     [|1..numLines|]
     |> Array.map (fun _ -> Console.ReadLine().Split(' '))
-    |> createTransposeGraph numLines
+    |> createTransposeGraph
     |> costOfModules
     |> printDigraph
 

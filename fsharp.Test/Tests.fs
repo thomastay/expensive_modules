@@ -14,13 +14,37 @@ type Digraph =
 type TestGraphCreation () =
 
     [<TestMethod>]
-    member this.TestCreateGraph () =
+    member this.TestCreateGraph1 () =
         let graph =
             [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
-            |> createTransposeGraph 3
+            |> createTransposeGraph
         let m = [("a", 0); ("b", 1); ("c", 2)] |> Map.ofList
-        let adj = [|[||];[|0|];[|0; 1|]|]
+        let adj = array2D [[true; false; false];
+                           [true; true; false];
+                           [true; true; true]]
         Assert.AreEqual(graph.size, 3)
+        Assert.AreEqual(graph.labels, m)
+        Assert.IsTrue((graph.adjacency = adj))
+
+    [<TestMethod>]
+    member this.TestCreateGraph2 () =
+        let graph =
+            [|
+                [|"d"|];
+                [|"a"; "b"; "c"; "d"; "e"|];
+                [|"e"|];
+                [|"b"; "c"; "e"|];
+                [|"c"; "e"|];
+            |]
+            |> createTransposeGraph
+        let m = [("d", 0); ("a", 1); ("e", 2); ("b", 3); ("c", 4)] |> Map.ofList
+        let adj = array2D [ [true; true; false; false; false]
+                            [false; true; false; false; false]
+                            [false; true; true; true; true]
+                            [false; true; false; true; false]
+                            [false; true; false; true; true]
+                          ]
+        Assert.AreEqual(graph.size, 5)
         Assert.AreEqual(graph.labels, m)
         Assert.IsTrue((graph.adjacency = adj))
 
@@ -30,7 +54,7 @@ type TestExpensiveModules() =
     member this.TestSimple1 () =
         let graph =
             [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
-            |> createTransposeGraph 3
+            |> createTransposeGraph
             |> costOfModules
         let aSize = 1
         let bSize = 2
@@ -49,7 +73,7 @@ type TestExpensiveModules() =
                 [|"d"|];
                 [|"e"|];
             |]
-            |> createTransposeGraph 5
+            |> createTransposeGraph
             |> costOfModules
         let aSize = 1
         let bSize = 2

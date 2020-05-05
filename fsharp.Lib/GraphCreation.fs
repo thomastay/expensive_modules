@@ -5,9 +5,40 @@ open UtilityCollections
 type Digraph =
     {size: int;
     labels: Map<string, int>;
-    adjacency: int[][]; //adjacency[i] is the neighbors of the ith node
+    adjacency: bool[,]; // adjcency is now a full-block adjacency matrix
     costMap: Dictionary<int, ChildNodes>}
 
+// API Version 2
+let private _testing = [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
+
+let createLabels nodes =
+    let size = Array.length nodes
+    Array.zip nodes [|0..size-1|]
+    |> Map.ofArray
+
+let createTransposeEdges labels sl =
+    let sink = Map.find (Array.head sl) labels
+    let sources =
+        Array.tail sl
+        |> Array.map (fun s -> Map.find s labels)
+    (sources, sink)
+
+let createTransposeGraph (sll: string[][]) =
+    let nodes = Array.map Array.head sll
+    let size = Array.length nodes
+    let labels = createLabels nodes
+    let adj = Array2D.zeroCreate size size
+    // for each source, sink, update the adjacency matrix
+    // XXX: Consider whether or not we want reflexive relations
+    for i in 0..size-1 do
+        let sources, sink = createTransposeEdges labels sll.[i]
+        for source in sources do
+            adj.[source, sink] <- true
+        adj.[sink, sink] <- true // XXX: Should we keep this?
+    {size=size; labels = labels; adjacency = adj;
+    costMap = new Dictionary<int, ChildNodes>();}
+
+(*
 let createTransposeEdges labels sl =
     let tailLength = Array.length sl - 1
     let sink =
@@ -33,12 +64,11 @@ let makeFixedSizeMap size m =
     )
     |> Array.ofList
 
-let createTransposeGraph size (sll: string[][]) : Digraph =
+// size deprecated for now
+let createTransposeGraph _ (sll: string[][]) : Digraph =
     let nodes = Array.map Array.head sll
-    assert (nodes.Length = size)
-    let labels =
-        Array.zip nodes [|0..size-1|]
-        |> Map.ofArray
+    let size = Array.length nodes
+    let labels = createLabels nodes
     let adj =
         sll
         |> Array.collect (createTransposeEdges labels)
@@ -46,3 +76,4 @@ let createTransposeGraph size (sll: string[][]) : Digraph =
         |> makeFixedSizeMap size
     {size=size; labels = labels; adjacency = adj;
     costMap = new Dictionary<int, ChildNodes>();}
+*)

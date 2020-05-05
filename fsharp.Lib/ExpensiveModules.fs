@@ -6,11 +6,20 @@ open System.Collections.Generic
 open UtilityCollections
 open GraphCreation
 
+let genAdj arr row =
+    let numCols = Array2D.length2 arr
+    let rec helper col lst =
+        if col = numCols then lst else
+        if arr.[row, col] && row <> col // adjacency
+        then helper (col + 1) (col::lst)
+        else helper (col + 1) lst
+    helper 0 []
+
 let costOfModules (graph: Digraph) =
     let rec dfs (node: int) =
         let found, value = graph.costMap.TryGetValue node
         if found then value else
-            let adj = graph.adjacency.[node]
+            let adj = genAdj graph.adjacency node
             let s = ChildNodes.init node
             match adj.Length with
             | 0 ->
@@ -18,10 +27,11 @@ let costOfModules (graph: Digraph) =
                 graph.costMap.Add(node, s)
                 s
             | _ ->
+                let cons x y = x :: y
                 let s =
                     adj
-                    |> Array.map dfs
-                    |> Array.append [|s|]
+                    |> List.map dfs
+                    |> cons s
                     |> ChildNodes.build
                 graph.costMap.Add(node, s)
                 s
