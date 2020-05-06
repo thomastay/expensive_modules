@@ -17,3 +17,7 @@ However, it runs too slowly! Takes nearly 10s extra to execute the transitive re
 It does make the costOfModules algorithm EXTREMELY fast, though, taking 1s to run.
 So implementing cost reduction is worthwhile, but we will probably have to do it with adjacency lists...
 Side note: I implemented it wrongly, and didn't realized it was wrong until later... need to write tests for the reduction function. I should also write a .out.correct file for the test_sparse and use it as a macro test case...
+
+Update2
+Got it to run at 1.3s, by implementing loop parallelism, and moving the check for adj[i, k] out of the loop - this speeds it up immensely!
+Without parallelism, it runs in about 1.3s too. So the parallelism isn't helping much any longer
