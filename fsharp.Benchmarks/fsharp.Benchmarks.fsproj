@@ -3,15 +3,22 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;cpp</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <Compile Include="Bench.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\fsharp.Lib\fsharp.Lib.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.1" />
   </ItemGroup>
 
 </Project>

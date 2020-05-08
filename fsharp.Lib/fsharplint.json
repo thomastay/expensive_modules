@@ -15,7 +15,7 @@
         "classMemberSpacing": { "enabled": false },
         "tupleFormatting": {
             "tupleCommaSpacing": { "enabled": true },
-            "tupleIndentation": { "enabled": true },
+            "tupleIndentation": { "enabled": false },
             "tupleParentheses": { "enabled": true }
         },
         "patternMatchFormatting": {

@@ -341,3 +341,5 @@ healthchecksdb
 
 #vim
 *.swp
+/cpp/cpp/cpp.tlog
+/cpp/cpp.exe

@@ -1,4 +1,5 @@
-﻿module TransitiveReduction
+﻿[<RequireQualifiedAccess>]
+module TransitiveReduction
 open System.Threading.Tasks
 open GraphCreation
 
@@ -12,9 +13,12 @@ let reduce (graph: Digraph): Digraph =
     let adj = graph.adjacency
     let n = Array2D.length1 adj
     for k = n-1 downto 0 do
-        for i in 0..n-1 do
-            if adj.[i, k] then
-                for j in 0..n-1 do
-                    if adj.[k, j] then
-                        adj.[i, j] <- false
+        Parallel.For(0, n,
+            (fun i ->
+                if adj.[i, k] then
+                    for j in 0..n-1 do
+                        if adj.[k, j] then
+                            adj.[i, j] <- false
+            )
+        ) |> ignore
     graph

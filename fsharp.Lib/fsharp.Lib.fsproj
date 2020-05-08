@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Configurations>Debug;Release;cpp</Configurations>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -10,7 +11,7 @@
 
     <ItemGroup>
         <Content Include="fsharplint.json" />
-        <Compile Include="ChildNodes.fs" />
+        <Compile Include="UtilityCollections.fs" />
         <Compile Include="GraphCreation.fs" />
         <Compile Include="TransitiveReduction.fs" />
         <Compile Include="ExpensiveModules.fs" />
