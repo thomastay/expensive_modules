@@ -21,3 +21,8 @@ Side note: I implemented it wrongly, and didn't realized it was wrong until late
 Update2
 Got it to run at 1.3s, by implementing loop parallelism, and moving the check for adj[i, k] out of the loop - this speeds it up immensely!
 Without parallelism, it runs in about 1.3s too. So the parallelism isn't helping much any longer
+
+Update 8/5/2020:
+It seems like I was totally mistaken. I spent today optimizing the parsing code, but that part takes onlt 0.2s.
+Instead, I should have been focusing on the printing! Right now, printing the data takes roughly 0.5s (as measured on Benchmark.NET)
+The rest of the code runs <1s, actly with 925ms mean! So I've already reached my goal, except that printing the output takes a long time! I should look into speeding it up.

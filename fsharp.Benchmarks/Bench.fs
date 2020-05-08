@@ -5,10 +5,14 @@ open System.IO
 open BenchmarkDotNet.Attributes
 open BenchmarkDotNet.Running
 open GraphCreation
-open UtilityCollections.Helpers
+open ExpensiveModules
 
 type BenchExpensiveModules() =
     let filename = @"C:\Users\z124t\source\repos\expensive_modules\test_sparse_big.in"
+    let printDigraph (g: Digraph): unit =
+        for KeyValue(label, node) in g.labels do
+            let beneath = (g.costMap.Item node)
+            printfn "%s, %d" label (beneath.Length)
 
     //[<Params(2, 4, 8)>]
     // member val k = 0 with get, set
@@ -17,25 +21,15 @@ type BenchExpensiveModules() =
     // member self.Setup() =
 
     [<Benchmark>]
-    member self.parseNaive() =
-        use sr = new StreamReader (filename)
-        let _numLines = sr.ReadLine () |> int
-        let restOfFile =
-            seq{ while not sr.EndOfStream do sr.ReadLine()}
-            |> Seq.toArray  // read entire file into memory
-        restOfFile
-        |> Array.map stringSplit
-        |> createTransposeGraph
-
-    [<Benchmark>]
-    member self.parseWhileLexing() =
+    member self.runWholeProgram() =
         use sr = new StreamReader (filename)
         let numLines = sr.ReadLine () |> int
-        let restOfFile =
-            seq{ while not sr.EndOfStream do sr.ReadLine()}
-            |> Seq.toArray  // read entire file into memory
-        restOfFile
-        |> parseCreateDigraph numLines
+        [|1..numLines|]
+        |> Array.map (fun _ -> sr.ReadLine().Split())
+        |> createTransposeGraph
+        |> TransitiveReduction.reduce
+        |> costOfModules
+        //|> printDigraph
 
 [<EntryPoint>]
 let main _ =
