@@ -14,26 +14,17 @@ let readFromConsole() =
     [|1..numLines|]
     |> Array.map (fun _ -> Console.ReadLine().Split(' '))
 
-let readFromConsoleV2() =
-    let numLines = Console.ReadLine() |> int
-    let restOfFile =
-        [|1..numLines|]
-        |> Array.map (fun _ -> Console.ReadLine() )
-    (numLines, restOfFile)
-
 let readFromFile (filename: string) =
     (fun () ->
         use sr = new StreamReader (filename)
         let numLines = sr.ReadLine () |> int
-        let restOfFile =
-            seq{ while not sr.EndOfStream do sr.ReadLine()}
-            |> Seq.toArray  // read entire file into memory
-        (numLines, restOfFile)
+        [|1..numLines|]
+        |> Array.map (fun _ -> sr.ReadLine().Split())
     )
 
 let runExpensiveModules readerStrategy =
     readerStrategy()
-    ||> parseCreateDigraph
+    |> createTransposeGraph
     |> TransitiveReduction.reduce
     |> costOfModules
     |> printDigraph
@@ -41,7 +32,7 @@ let runExpensiveModules readerStrategy =
 [<EntryPoint>]
 let main argv =
     match Array.length argv with
-    | 0 -> runExpensiveModules readFromConsoleV2
+    | 0 -> runExpensiveModules readFromConsole
     | 1 -> runExpensiveModules (readFromFile argv.[0])
     //| 2 -> printRandomGraph(float argv.[0]) (int argv.[1])
     // | _ -> failwith "Enter no arguments" |> ignore

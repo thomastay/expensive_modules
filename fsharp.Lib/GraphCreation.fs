@@ -13,36 +13,6 @@ type Digraph =
 let private _testString = [|"a b c"; "b c"; "c"|]
 let private _testing = [|[|"a"; "b"; "c"|]; [|"b"; "c"|]; [|"c"|]|]
 
-let findStrOrUpdateMap (m: Map<string, int>) s =
-    match Map.tryFind s m with
-    | Some(i) -> (m, i)
-    | None ->
-        let size = Map.count m
-        (Map.add s size m, size)
-
-// Note: Modifies adj! Not a pure function
-// Also creates the labels array along the way, tally hoo
-// Idea: should re-tool to use Dictionary<string, int>
-let private parseCreateLabelUpdateAdj readerInput (adj: bool[,]) m =
-    let strs = stringSplit readerInput
-    let sink = Array.head strs
-    let sources = Array.tail strs
-    let m, sink = findStrOrUpdateMap m sink
-    (m, sources)
-    ||> Array.fold (fun m source ->
-        let m, source = findStrOrUpdateMap m source
-        adj.[source, sink] <- true
-        m
-        )
-
-let parseCreateDigraph size sl =
-    let adj = Array2D.zeroCreate size size
-    let labels =
-        (Map.empty, sl)
-        ||> Array.fold (fun m s -> parseCreateLabelUpdateAdj s adj m)
-    {size=size; labels = labels; adjacency = adj;
-    costMap = Dictionary<int, ChildNodes>();}
-
 let createLabels nodes =
     let size = Array.length nodes
     Array.zip nodes [|0..size-1|]
