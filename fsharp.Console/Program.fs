@@ -1,5 +1,4 @@
-﻿open UtilityCollections.Helpers
-open GraphCreation
+﻿open GraphCreation
 open ExpensiveModules
 open System
 open System.IO
@@ -12,7 +11,7 @@ let printDigraph (g: Digraph): unit =
 let readFromConsole() =
     let numLines = Console.ReadLine() |> int
     [|1..numLines|]
-    |> Array.map (fun _ -> Console.ReadLine().Split(' '))
+    |> Array.map (fun _ -> Console.ReadLine().Split())
 
 let readFromFile (filename: string) =
     (fun () ->
