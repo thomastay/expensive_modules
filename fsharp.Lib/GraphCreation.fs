@@ -36,7 +36,7 @@ let createTransposeGraph (sll: string[][]) =
         for source in sources do
             adj.[source, sink] <- true
     {size=size; labels = labels; adjacency = adj;
-    costMap = new Dictionary<int, ChildNodes>();}
+    costMap = new Dictionary<int, ChildNodes>(size);}
 
 (* Old code based on adjacency lists
     Not deleting because it may be useful later on
