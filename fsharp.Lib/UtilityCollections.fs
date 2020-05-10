@@ -13,7 +13,7 @@ module ChildNodes =
     let build (lst: ChildNodes[]): ChildNodes =
         let totalSize =   // num elts total
             lst
-            |> Array.sumBy (fun arr -> Array.length arr)
+            |> Array.sumBy Array.length
         let d = HashSet(totalSize / 4)  // 4 det'd by trial
         for s in lst do
             d.UnionWith s

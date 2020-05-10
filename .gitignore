@@ -343,3 +343,5 @@ healthchecksdb
 *.swp
 /cpp/cpp/cpp.tlog
 /cpp/cpp.exe
+
+.ionide
