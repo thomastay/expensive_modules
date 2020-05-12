@@ -3,7 +3,45 @@
 In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement!
 
 ## The question
-TODO
+Applications in 2020 typically have hundreds of dependencies, all of which need to be compiled. The downside is, changing one module might cause all the downstream modules to be recompiled. The task is as follows: given a set of 2000 modules, all of which depend on each other in some way, print the number of modules downstream of each module.
+
+The input will look like the following. In this representation, module A depends on B, E, and F. As a result, module A is downstream of module B (and E,F too).
+
+```
+A B E F
+B D
+C B D E
+D E
+E
+F D
+```
+
+This corresponds to the following dependency graph:
+```
+            E
+            |
+            D
+           / \
+          B   F
+        /  \ /
+        C   A
+```
+Notice that not all edges are drawn, in particular any transitive edges are not drawn. This will come in useful later.
+
+This program will produce the following output, corresponding to the number of downstream modules (including itself):
+```
+A 1
+B 3
+C 1
+D 5
+E 6
+F 2
+```
+
+## The original solution
+
+At a high level, 
+
 
 ## Performance with Data Structures 
 As [Chandler Carruth](https://www.youtube.com/watch?v=fHNmRkzxHWs) puts it, Data Structures for performance, Algorithms for efficiency. The thing that made the most difference in my F# code was **Data structures, Data structures, Data structures**. 
@@ -177,3 +215,6 @@ let reduce (graph: Digraph): Digraph =
 
 ## References
 1. An algorithm for transitive reduction of an acyclic graph (1987). Gries, D., Martin, A. J. et al
+2. You may notice that I'm performing parallel reads and writes to a shared mutable data structure, namely the 2D adjacency matrix. While this is normally highly discouraged, in this case it is fine, since the reads and writes are guaranteed to never overlap. That said, although conceptually it makes sense (each thread has a different row), it is not obvious that it holds at the processor level. 
+
+To verify this, I dug into the System.Corelib.Private source code to check how they perform writes on a 2D array. The fear would be that if arr.[i, 2000] and arr.[i+1, 0] overlap. This can only happen if the CLR isn't addressing each boolean by itself, but rather batching boolean reads and writes. Thankfully, the CLR uses regular unsafe pointer arithmetic to get and set booleans. Since most modern processors are byte-addressable, this means that there is no overlap. Phew! These are the details one has to worry about when performing lock-free reads and writes to shared mutable state.
