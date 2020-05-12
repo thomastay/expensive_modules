@@ -184,7 +184,7 @@ let reduce (graph: Digraph): Digraph =
 ```
 A few words on this algorithm. When I first implemented it *as-is* from the paper, I found that the total runtime shot up from 5.5s to **12s**! That was really disheartening, since I was sure that implementing a better algorithm was the key to speeding this algorithm up. 
 
-Nonetheless, with a few performance improvements, I managed to get the program to run at **1.4s**, another order of magnitude improvement! Firstly, I implemented the middle loop as a parallel for loop, which helped to speed things up a little.
+Nonetheless, with a few performance improvements, I managed to get the program to run at **1.4s**, another order of magnitude improvement! Firstly, I implemented the middle loop as a parallel for loop, which helped to speed things up a little[2].
 
 But the main improvement came by avoiding work (_again_). Notice that I do an **if true** check on adj.[i,k] before I run the innermost loop. If that is false, we skip a whole inner loop of work. That's **2000** iterations saved - No wonder the speed up was an order of magnitude!
 
