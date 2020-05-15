@@ -1,6 +1,6 @@
 # Lessons I learnt from optimizing a graph algorithm in F#
 
-In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement! *Spoiler alert*: The solution turned out to be straightforward: exploit **cache efficiency**, and **do less work**. 
+In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement! *Spoiler alert*: exploit **cache efficiency**, and **do less work**. 
 
 For those unaware, F# is a *functional-first language that runs on the .NET platform (think C#)*. Despite the title of the article, very little of the optimization techniques applies solely to F#, and so I have intentionally wrote this article to make it comprehensible **even if** you don't understand a line of code in the article. 
 
