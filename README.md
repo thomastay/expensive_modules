@@ -74,9 +74,14 @@ As [Chandler Carruth](https://www.youtube.com/watch?v=fHNmRkzxHWs) puts it, Data
 When I first wrote my F# code, it was filled with Maps and Lists. Now, that was very good F# code: *idiomatic* and *easy to read*, but it also meant that it was **really slow**. As you may be aware, F# maps are implemented as Binary Trees, which means that insert and search are O(log n) time operations. The hot path of my application involved a lot of Map lookups, and so I changed the F# maps to .NET dictionaries, which have O(1) lookup time. 
 
 Similarly, I changed F#'s sets to HashSets, and changed the F#'s lists (which are linked lists) to .NET arrays. Changing immutable collections to mutable ones for performance is not surprising in itself, but it's important to remember that mutablity makes the code harder to reason about. 
-So, I kept the Maps and Lists around in the parsing section of the code, which my benchmarking showed only took less than half a second - recall that the merge step took almost a *full minute*! We'll get around to optimizing that later on, but as always, profile your code and only make life more complex if you have to.
 
-Here's a snippet to demonstrate what I mean. The old code is presented first, which uses F#'s sets, maps and lists, and the new code is below. This does a Depth-First Search (DFS) to obtain the set of child nodes that are under each parent node. There's obviously a lot to explain in this code, which I won't go into, but here's a summary of the Data Structures changed:
+So, I kept the Maps and Lists around in the parsing section of the code, which my benchmarking showed only took less than half a second - recall that the merge step took almost a *full minute*! 
+
+We'll get around to optimizing that later on, but as always, profile your code and only make life more complex if you have to.
+
+Here's a snippet to demonstrate what I mean. The old code is presented first, which uses F#'s sets, maps and lists, and the new code is below. 
+
+This does a Depth-First Search (DFS) to obtain the set of child nodes that are under each parent node. There's obviously a lot to explain in this code, which I won't go into, but here's a summary of the Data Structures changed:
 
   - Adjacency lists (Map from string to Set\<string\>) got changed to a 2D adjacency matrix of bools
   - The cost Map, which used to be a Map from string to string, got changed to a Dictionary from int to int[]. Note that ChildNodes is an alias for int[], I will explain this unusual coding style later.
@@ -148,7 +153,9 @@ If you've been following closely, then you'll notice one change which I didn't m
 
 That leads me to my second major perf improvement - **Not using strings**. Strings are basically blobs of memory that have to be yanked out from all over the heap, that the GC has to care about, and they have to be hashed (that takes time!) If you can avoid using strings, then don't.
 
-In my application, I was using strings as the names of each of the nodes in the graph, and I changed every use of a string to an int. Now, the strings as names for the nodes still had to be kept around, since I needed to print the nodes at the end, so I simply kept a Map called "labels" around that would let me know which strings corresponded to which ints. Notice that I kept this as an F# map, despite everything I said earlier, since it isn't involved in the performance critical sections. Remember, mutability means more work for the reader.
+In my application, I was using strings as the names of each of the nodes in the graph, and I changed every use of a string to an int. Now, the strings as names for the nodes still had to be kept around, since I needed to print the nodes at the end, so I simply kept a Map called "labels" around that would let me know which strings corresponded to which ints. 
+
+Notice that I kept this as an F# map, despite everything I said earlier, since it isn't involved in the performance critical sections. Remember, mutability means more work for the reader.
 
 With these two perf improvements, I was able to get my total time down from *58s* to *5.5s*, an **10x** improvement!
 
@@ -183,6 +190,7 @@ Let's take a more real-world example to see this in action:
 As you can see, in this graph there are many **redundant edges**. In particular, we have something called *transitive redundancy*, i.e. if I can get from A to B in two or more steps, then I shouldn't have an edge from A to B at all!
 
 This problem is closely related to the problem of a *transitive closure*. In a transitive closure, we take some DAG and add in all the transitive edges. That is, if I can go from *A to B* and *B to C*, then I should also be able to go from *A to C*.
+
 We need to do what's called a Transitive Reduction, going in the opposite direction.
 
 If you've taken a Discrete Mathematics class (spoiler: I used to teach one), you'll know that there exists an O(n^3) algorithm for computing Transitive Closures, called [Warshall's algorithm](https://cs.winona.edu/lin/cs440/ch08-2.pdf). I won't go too much into depth as the linked PDF explains it well.
