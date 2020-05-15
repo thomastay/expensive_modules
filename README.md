@@ -1,8 +1,15 @@
 # Lessons I learnt from optimizing a graph algorithm in F#
 
-In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement!
+In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement! Spoiler alert: The solution turned out to be straightforward: exploit cache efficiency, and do less work. 
+
+For those unaware, F# is a *functional-first language that runs on the .NET platform (think C#)*. Despite the title of the article, very little of the optimization techniques applies solely to F#, and so I have intentionally wrote this article to make it comprehensible **even if** you don't understand a line of code in the article. 
+
+*Why F#*? All significant optimizations come from *careful profiling and refactoring*, and F# has very good support for both. F# lets me write succint, elegant code while being easy to optimize, as this article will show. Also, I love that I get highly tuned data structures via .NET to speed up my algorithms. 
 
 ## The question
+
+As with all interview questions, they usually come with a good 'ol blurb which attempts to give some context to the horridly abstract question you're expected to comprehend. Here's my attempt at paraphrasing it (note that all this is original writing, nothing copied):
+
 Applications in 2020 typically have hundreds of dependencies, all of which need to be compiled. The downside is, changing one module might cause all the downstream modules to be recompiled. The task is as follows: given a set of 2000 modules, all of which depend on each other in some way, print the number of modules downstream of each module.
 
 The input will look like the following. In this representation, module A depends on B, E, and F. As a result, module A is downstream of module B (and E,F too).
@@ -40,7 +47,25 @@ F 2
 
 ## The original solution
 
-At a high level, 
+The exact solution isn't super critical, so I won't go into too much depth (as well as not to spoil the fun for those new to the question!). Basically, it involves building a Directed Acyclic Graph (DAG) out of the list of lists, and then running a Depth-First Search in order to identify the number of children under each node. 
+
+Before a recursive call to the DFS on some node returns, it updates a shared hashtable, to indicate which children are under the node. For instance, in the tree:
+```
+            E
+            |
+            D
+           / \
+          B   F
+        /  \ /
+        C   A
+```
+When the call to node B returns, the map will contain {B: {B, C, A}}. 
+
+With this information, finding the child nodes under a node is as simple as calling the DFS on each child node, then merging the set of all its child nodes. 
+
+When I first implemented this algorithm in F# a year back, it worked very well, but took 55s for a large dataset. And honestly, that was fine. It solved the problem! Problem solving is always the priority. 
+
+But that's not enough for you, dear reader. You want to know how to squeeze that last drop of performance, and that's what the rest of this article is about.
 
 
 ## Performance with Data Structures 
@@ -213,7 +238,7 @@ let reduce (graph: Digraph): Digraph =
 
 ## Failed ideas
 
-## References
+## Footnotes
 1. An algorithm for transitive reduction of an acyclic graph (1987). Gries, D., Martin, A. J. et al
 2. You may notice that I'm performing parallel reads and writes to a shared mutable data structure, namely the 2D adjacency matrix. While this is normally highly discouraged, in this case it is fine, since the reads and writes are guaranteed to never overlap. That said, although conceptually it makes sense (each thread has a different row), it is not obvious that it holds at the processor level. 
 
