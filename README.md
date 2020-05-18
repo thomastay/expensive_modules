@@ -187,8 +187,8 @@ C
 Looking at this graph, to calculate the nodes under C, it suffices to calculate the nodes under B. But under my current scheme, I would calculate the nodes under B **and nodes under A**, then merge those two together! Obviously, this is unnecessary work, since whatever is under A will also be under B. 
 
 Let's take a more real-world example to see this in action:
+
 ![A drawing of a graph with multiple transitive edges](./graph.drawio.svg)
-<img src="./graph.drawio.svg">
 
 As you can see, in this graph there are many **redundant edges**, marked in red. In particular, we have something called *transitive redundancy*, i.e. if I can get from A to B in two or more steps, then I shouldn't have an edge from A to B at all!
 
