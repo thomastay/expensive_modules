@@ -1,6 +1,6 @@
 # Lessons I learnt from optimizing a graph algorithm in F#
 
-In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement! *Spoiler alert*: exploit **cache efficiency**, and **do less work**. 
+In this article I'm going to share how I optimized a algorithms interview question down from **58s** down to **1.2s**, nearly a 50x improvement! *Spoiler alert*: Use the right data structures, exploit **cache efficiency**, and **do less work**. 
 
 For those unaware, F# is a *functional-first language that runs on the .NET platform (think C#)*. Despite the title of the article, very little of the optimization techniques applies solely to F#, and so I have intentionally wrote this article to make it comprehensible **even if** you don't understand a line of code in the article. 
 
@@ -10,7 +10,7 @@ For those unaware, F# is a *functional-first language that runs on the .NET plat
 
 As with all interview questions, they usually come with a good 'ol blurb which attempts to give some context to the horridly abstract question you're expected to comprehend. Here's my attempt at paraphrasing it (note that all this is original writing, nothing copied):
 
-Applications in 2020 typically have hundreds of dependencies, all of which need to be compiled. The downside is, changing one module might cause all the downstream modules to be recompiled. The task is as follows: given a set of 2000 modules, all of which depend on each other in some way, print the number of modules downstream of each module.
+**The question:** Applications in 2020 typically have hundreds of dependencies, all of which need to be compiled. The downside is, changing one module might cause all the downstream modules to be recompiled. The task is as follows: given a set of 2000 modules, all of which depend on each other in some way, print the number of modules downstream of each module.
 
 The input will look like the following. In this representation, module A depends on B, E, and F. As a result, module A is downstream of module B (and E,F too).
 
@@ -47,7 +47,7 @@ F 2
 
 ## The original solution
 
-The exact solution isn't super critical, so I won't go into too much depth (as well as not to spoil the fun for those new to the question!). Basically, it involves building a Directed Acyclic Graph (DAG) out of the list of lists, and then running a Depth-First Search in order to identify the number of children under each node. 
+The exact solution isn't super critical, so I won't go into too much depth (as well as not to spoil the fun for those new to the question). Basically, it involves building a Directed Acyclic Graph (DAG) out of the list of lists, and then running a Depth-First Search in order to identify the number of children under each node. 
 
 Before a recursive call to the DFS on some node returns, it updates a shared hashtable, to indicate which children are under the node. For instance, in the tree:
 ```
@@ -69,11 +69,13 @@ But that's not enough for you, dear reader. You want to know how to squeeze that
 
 
 ## Performance with Data Structures 
-As [Chandler Carruth](https://www.youtube.com/watch?v=fHNmRkzxHWs) puts it, Data Structures for performance, Algorithms for efficiency. The thing that made the most difference in my F# code was **Data structures, Data structures, Data structures**. 
+As [Chandler Carruth](https://www.youtube.com/watch?v=fHNmRkzxHWs) puts it, performance with data structures, efficiency with algorithms. The thing that made the most difference in my F# code was **Data structures, Data structures, Data structures**. 
 
 When I first wrote my F# code, it was filled with Maps and Lists. Now, that was very good F# code: *idiomatic* and *easy to read*, but it also meant that it was **really slow**. As you may be aware, F# maps are implemented as Binary Trees, which means that insert and search are O(log n) time operations. The hot path of my application involved a lot of Map lookups, and so I changed the F# maps to .NET dictionaries, which have O(1) lookup time. 
 
-Similarly, I changed F#'s sets to HashSets, and changed the F#'s lists (which are linked lists) to .NET arrays. Changing immutable collections to mutable ones for performance is not surprising in itself, but it's important to remember that mutablity makes the code harder to reason about. 
+Similarly, I changed F#'s sets to HashSets, and changed the F#'s lists (which are linked lists) to .NET arrays, which have much better cache locality. Since I was mostly looping over my lists, having them as arrays made them looping faster. 
+
+Changing immutable collections to mutable ones for performance is not surprising in itself, but it's important to remember that mutablity makes the code harder to reason about. 
 
 So, I kept the Maps and Lists around in the parsing section of the code, which my benchmarking showed only took less than half a second - recall that the merge step took almost a *full minute*! 
 
@@ -84,7 +86,7 @@ Here's a snippet to demonstrate what I mean. The old code is presented first, wh
 This does a Depth-First Search (DFS) to obtain the set of child nodes that are under each parent node. There's obviously a lot to explain in this code, which I won't go into, but here's a summary of the Data Structures changed:
 
   - Adjacency lists (Map from string to Set\<string\>) got changed to a 2D adjacency matrix of bools
-  - The cost Map, which used to be a Map from string to string, got changed to a Dictionary from int to int[]. Note that ChildNodes is an alias for int[], I will explain this unusual coding style later.
+  - The cost Map, which used to be a Map from string to string, got changed to a Dictionary from int to int[]. Note that ChildNodes is an alias for int[], I did this so I could change the implementation of ChildNodes without rewriting a lot of code.
 
 ```F#
 // old code
@@ -185,9 +187,10 @@ C
 Looking at this graph, to calculate the nodes under C, it suffices to calculate the nodes under B. But under my current scheme, I would calculate the nodes under B **and nodes under A**, then merge those two together! Obviously, this is unnecessary work, since whatever is under A will also be under B. 
 
 Let's take a more real-world example to see this in action:
-( insert graph drawing here )
+![A drawing of a graph with multiple transitive edges](./graph.drawio.svg)
+<img src="./graph.drawio.svg">
 
-As you can see, in this graph there are many **redundant edges**. In particular, we have something called *transitive redundancy*, i.e. if I can get from A to B in two or more steps, then I shouldn't have an edge from A to B at all!
+As you can see, in this graph there are many **redundant edges**, marked in red. In particular, we have something called *transitive redundancy*, i.e. if I can get from A to B in two or more steps, then I shouldn't have an edge from A to B at all!
 
 This problem is closely related to the problem of a *transitive closure*. In a transitive closure, we take some DAG and add in all the transitive edges. That is, if I can go from *A to B* and *B to C*, then I should also be able to go from *A to C*.
 
@@ -244,10 +247,23 @@ let reduce (graph: Digraph): Digraph =
 
 ## Squeezing the last drop of performance
 
+By and large, I was pretty happy with the performance as is, so I stopped here.
+
+There were some other things that helped increase performance by little bits and pieces here and there, mentioning them for completeness:
+
+  - Preallocating capacity for HashSets and Dictionaries helped increase performance by 0.1s.
+  - For HashSets, I first preallocated the capacity of the sum of all the sizes of the arrays it was going to merge together. However, that causes the hashsets to become too big. With some profiling, I found that doing sumOfSizes / 4 worked best.
+
 ## Failed ideas
+More than knowing what worked, it's also useful to note what didn't work:
+  1. I tried to beat String.Split() by writing my custom lex and parse phase but failed. As it turns out, String.Split() isn't too slow for this application (~1.8MB file). 
+  1. Also, on the CLR memory allocations are really cheap, so having 4000 strings in memory was a hassle for the GC, but didn't affect runtime significantly. Plus, it gets GC-ed pretty quickly as it's only used in Graph creation.
+  1. As part of the above, I tried to speed up the graph creation by incrementally building it during the string parsing phase, but I couldn't get it to beat the simple implementation. At any rate, it turns out that the parsing and graph creation is not the bottleneck.
+  1. Merging nodes is the bottleneck of this algorithm. I tried doing parallel merge and sorted merge using plain sorted arrays, but that didn't help either. Turns out HashSets are too darn optimized.
 
 ## Footnotes
 1. An algorithm for transitive reduction of an acyclic graph (1987). Gries, D., Martin, A. J. et al
-2. You may notice that I'm performing parallel reads and writes to a shared mutable data structure, namely the 2D adjacency matrix. While this is normally highly discouraged, in this case it is fine, since the reads and writes are guaranteed to never overlap. That said, although conceptually it makes sense (each thread has a different row), it is not obvious that it holds at the processor level. 
 
-To verify this, I dug into the System.Corelib.Private source code to check how they perform writes on a 2D array. The fear would be that if arr.[i, 2000] and arr.[i+1, 0] overlap. This can only happen if the CLR isn't addressing each boolean by itself, but rather batching boolean reads and writes. Thankfully, the CLR uses regular unsafe pointer arithmetic to get and set booleans. Since most modern processors are byte-addressable, this means that there is no overlap. Phew! These are the details one has to worry about when performing lock-free reads and writes to shared mutable state.
+2. You may notice that I'm performing parallel reads and writes to a shared mutable data structure, namely the 2D adjacency matrix. While this is normally highly discouraged, in this case it is fine, since the reads and writes are guaranteed to never overlap. That said, although conceptually it makes sense (each thread has a different row), it is not obvious that it holds at the processor level.   \
+ To verify this, I dug into the System.Corelib.Private source code to check how they perform writes on a 2D array. The fear would be that if arr.[i, 2000] and arr.[i+1, 0] overlap. This can only happen if the CLR isn't addressing each boolean by itself, but rather batching boolean reads and writes. Thankfully, the CLR uses regular unsafe pointer arithmetic to get and set booleans. Since most modern processors are byte-addressable, this means that there is no overlap. \
+ Phew! These are the details one has to worry about when performing lock-free reads and writes to shared mutable state.
