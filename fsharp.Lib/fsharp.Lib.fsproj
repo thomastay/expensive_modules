@@ -16,6 +16,10 @@
         <Compile Include="TransitiveReduction.fs" />
         <Compile Include="ExpensiveModules.fs" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FSharp.Formatting" Version="4.0.1" />
+    </ItemGroup>
     <Target Name="FSharpLint" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
         <Exec Command="dotnet fsharplint -f msbuild lint --lint-config $(MSBuildThisFileDirectory)/fsharplint.json $(MSBuildProjectFullPath)" ConsoleToMsBuild="true" IgnoreExitCode="true" />
     </Target>
